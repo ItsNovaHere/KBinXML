@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KBinXML", "KBinXML\KBinXML.csproj", "{A281831A-E283-45E6-A8FB-5CEC180E4ACF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KBinXML.Tests", "KBinXML.Tests\KBinXML.Tests.csproj", "{36DBC69D-8A84-4B1E-9CD7-5A96956B32BA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A281831A-E283-45E6-A8FB-5CEC180E4ACF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A281831A-E283-45E6-A8FB-5CEC180E4ACF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A281831A-E283-45E6-A8FB-5CEC180E4ACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A281831A-E283-45E6-A8FB-5CEC180E4ACF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36DBC69D-8A84-4B1E-9CD7-5A96956B32BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36DBC69D-8A84-4B1E-9CD7-5A96956B32BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36DBC69D-8A84-4B1E-9CD7-5A96956B32BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36DBC69D-8A84-4B1E-9CD7-5A96956B32BA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
