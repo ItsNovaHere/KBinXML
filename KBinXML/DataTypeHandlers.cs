@@ -8,7 +8,7 @@ namespace KBinXML {
 
 	public static class DataTypeHandlers {
 
-		public delegate string ToString(DataStream stream, int count);
+		public new delegate string ToString(DataStream stream, int count);
 
 		public static readonly Dictionary<NodeType, DataTypeHandler> ToStringMap = new();
 
