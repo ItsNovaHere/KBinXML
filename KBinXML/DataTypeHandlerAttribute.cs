@@ -3,7 +3,7 @@
 namespace KBinXML {
 
 	[AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
-	public class DataTypeHandlerAttribute : Attribute {
+	internal class DataTypeHandlerAttribute : Attribute {
 
 		public NodeType Type { get; }
 		public int Count { get; }

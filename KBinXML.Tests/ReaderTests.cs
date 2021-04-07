@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Xml.Linq;
 using Xunit;
@@ -23,7 +22,6 @@ namespace KBinXML.Tests {
 			
 			Assert.True(XNode.DeepEquals(XDocument.Load("test.xml"), document));
 		}
-		
 	}
 
 }

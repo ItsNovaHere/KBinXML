@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace KBinXML {
 
-	public static class DataTypeHandlers {
+	internal static class DataTypeHandlers {
 
 		public new delegate string ToString(DataStream stream, int count);
 
@@ -17,12 +17,8 @@ namespace KBinXML {
 			foreach (var property in properties)
 				if (property.GetValue(null) is ToStringInternal method) {
 					foreach (var attribute in property.GetCustomAttributes<DataTypeHandlerAttribute>()) {
-						if (!ToStringMap.TryAdd(attribute.Type, new DataTypeHandler((stream, count) => method(stream, count * attribute.Count), attribute))) {
-							throw new Exception("Type handler already defined.");
-						}
+						ToStringMap.Add(attribute.Type, new DataTypeHandler((stream, count) => method(stream, count * attribute.Count), attribute));
 					}
-				} else {
-					throw new Exception("Invalid method definition.");
 				}
 		}
 

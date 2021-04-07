@@ -1,6 +1,6 @@
 ﻿namespace KBinXML {
 
-	public struct DataTypeHandler {
+	internal readonly struct DataTypeHandler {
 
 		public DataTypeHandlers.ToString Method { get; }
 		public DataTypeHandlerAttribute Attribute { get; }

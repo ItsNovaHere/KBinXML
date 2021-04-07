@@ -22,7 +22,10 @@ namespace KBinXML {
 			return true;
 		}
 
-		public void Reset() { }
+		public void Reset() {
+			_reader.DataStream.Position = 0;
+			_reader.NodeStream.Position = 0;
+		}
 
 		public Node Current { get; private set; }
 

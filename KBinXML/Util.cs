@@ -66,46 +66,6 @@ namespace KBinXML {
 			return 0;
 		}
 
-		public static sbyte ReadSInt8(this Stream stream) {
-			if (stream.CanRead) {
-				return (sbyte) stream.ReadByte();
-			}
-
-			return 0;
-		}
-
-		public static ushort ReadUInt16(this Stream stream, Endianness endianness) {
-			if (stream.CanRead) {
-				var buffer = new byte[sizeof(ushort)];
-
-				stream.Read(buffer, 0, buffer.Length);
-
-				if (endianness == Endianness.BigEndian) {
-					Array.Reverse(buffer);
-				}
-				
-				return BitConverter.ToUInt16(buffer, 0);
-			}
-
-			return 0;
-		}
-		
-		public static short ReadSInt16(this Stream stream, Endianness endianness) {
-			if (stream.CanRead) {
-				var buffer = new byte[sizeof(short)];
-
-				stream.Read(buffer, 0, buffer.Length);
-
-				if (endianness == Endianness.BigEndian) {
-					Array.Reverse(buffer);
-				}
-				
-				return BitConverter.ToInt16(buffer, 0);
-			}
-
-			return 0;
-		}
-
 		public static uint ReadUInt32(this Stream stream, Endianness endianness) {
 			if (stream.CanRead) {
 				return stream.ReadUInt32(1, endianness)[0];
