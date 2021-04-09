@@ -1,6 +1,6 @@
 ﻿namespace KBinXML {
 
-	public enum Encoding : byte {
+	internal enum Encoding : byte {
 
 		ASCII = 0x20,
 		ISO88591 = 0x40,

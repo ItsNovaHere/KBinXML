@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace KBinXML {
 
-	public class NodeEnumerator : IEnumerator<Node> {
+	internal class NodeEnumerator : IEnumerator<Node> {
 
 		private readonly Reader _reader;
 		

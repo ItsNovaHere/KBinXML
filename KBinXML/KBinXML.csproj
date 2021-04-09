@@ -8,6 +8,8 @@
         <Authors>ItsNovaHere</Authors>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <RepositoryUrl>https://github.com/ItsNovaHere/KBinXML</RepositoryUrl>
+        <PackageVersion>2.0.3-beta</PackageVersion>
+        <Title>KBinXML</Title>
     </PropertyGroup>
 
     <ItemGroup>

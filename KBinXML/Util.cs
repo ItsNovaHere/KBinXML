@@ -1,18 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Reflection;
 
 namespace KBinXML {
 
-	public static class Util {
+	internal static class Util {
 
+		private static readonly Dictionary<NodeType, string> ToTypeNameMap = new();
+		private static readonly Dictionary<string, NodeType> FromTypeNameMap = new();
+		
+		static Util() {
+			foreach (NodeType value in Enum.GetValues(typeof(NodeType))) {
+				var attribute = typeof(NodeType).GetMember(value.ToString())[0].GetCustomAttribute<NamesAttribute>();
+				if(attribute == null) continue;
+				
+				ToTypeNameMap.Add(value, attribute.Name);
+				
+				foreach (var name in attribute.Names) {
+					FromTypeNameMap.Add(name, value);
+				}
+			}
+		}
+		
 		public static void Assert(bool condition) {
 			if (!condition) {
 				throw new Exception("Assertion failed.");
 			}
 		}
 
+		#region Stream
+
+		public static void WriteNodeType(this Stream stream, NodeType nodeType) {
+			stream.WriteByte((byte) nodeType);
+		}
+		
 		public static void Realign(this Stream stream, int size = 4) {
 			while (stream.Position % size > 0) {
 				stream.Position++;
@@ -50,6 +72,26 @@ namespace KBinXML {
 			return "";
 		}
 
+		public static void WriteString(this Stream stream, string value, Encoding encoding) {
+			if (stream.CanWrite) {
+				value += "\0";
+				
+				var data = encoding switch {
+					Encoding.ASCII => System.Text.Encoding.GetEncoding(20127).GetBytes(value),
+					Encoding.ISO88591 => System.Text.Encoding.GetEncoding(28591).GetBytes(value),
+					Encoding.EUCJP => System.Text.Encoding.GetEncoding(51932).GetBytes(value),
+					Encoding.ShiftJIS => System.Text.Encoding.GetEncoding(932).GetBytes(value),
+					Encoding.UTF8 => System.Text.Encoding.GetEncoding(65001).GetBytes(value),
+					_ => throw new ArgumentOutOfRangeException(nameof(encoding), encoding, null)
+				};
+
+				
+				stream.WriteUInt32((uint) data.Length, Endianness.BigEndian);
+				stream.Write(data, 0, data.Length);
+				stream.Realign();
+			}
+		}
+
 		public static string ReadString(this Stream stream, Encoding encoding) {
 			var ret = stream.ReadString((int) stream.ReadUInt32(Endianness.BigEndian), encoding);
 			
@@ -72,6 +114,18 @@ namespace KBinXML {
 			}
 
 			return 0;
+		}
+
+		public static void WriteUInt32(this Stream stream, uint value, Endianness endianness) {
+			if (stream.CanWrite) {
+				var data = BitConverter.GetBytes(value);
+
+				if (endianness == Endianness.BigEndian) {
+					Array.Reverse(data);
+				}
+				
+				stream.Write(data);
+			}
 		}
 		
 		public static uint[] ReadUInt32(this Stream stream, int count, Endianness endianness) {
@@ -137,76 +191,16 @@ namespace KBinXML {
 			return Array.Empty<T>();
 		}
 		
+		#endregion
+		
 		public static string ToTypeName(this NodeType nodeType) {
-			return nodeType switch {
-				NodeType.S8 => "s8",
-				NodeType.S8X2 => "2s8",
-				NodeType.S8X3 => "3s8",
-				NodeType.S8X4 => "4s8",
-				NodeType.VS8 => "vs8",
-
-				NodeType.U8 => "u8",
-				NodeType.U8X2 => "2u8",
-				NodeType.U8X3 => "3u8",
-				NodeType.U8X4 => "4u8",
-				NodeType.VU8 => "vu8",
-				
-				NodeType.S16 => "s16",
-				NodeType.S16X2 => "2s16",
-				NodeType.S16X3 => "3s16",
-				NodeType.S16X4 => "4s16",
-				NodeType.VS16 => "vs16",
-				
-				NodeType.U16 => "u16",
-				NodeType.U16X2 => "2u16",
-				NodeType.U16X3 => "3u16",
-				NodeType.U16X4 => "4u16",
-				NodeType.VU16 => "vu16",
-				
-				NodeType.S32 => "s32",
-				NodeType.S32X2 => "2s32",
-				NodeType.S32X3 => "3s32",
-				NodeType.S32X4 => "4s32",
-				
-				NodeType.U32 => "u32",
-				NodeType.U32X2 => "2u32",
-				NodeType.U32X3 => "3u32",
-				NodeType.U32X4 => "4u32",
-				
-				NodeType.S64 => "s64",
-				NodeType.S64X2 => "2s64",
-				NodeType.S64X3 => "3s64",
-				NodeType.S64X4 => "4s64",
-				
-				NodeType.U64 => "u64",
-				NodeType.U64X2 => "2u64",
-				NodeType.U64X3 => "3u64",
-				NodeType.U64X4 => "4u64",
-				
-				NodeType.Single => "float",
-				NodeType.SingleX2 => "2f",
-				NodeType.SingleX3 => "3f",
-				NodeType.SingleX4 => "4f",
-				
-				NodeType.Double => "double",
-				NodeType.DoubleX2 => "2d",
-				NodeType.DoubleX3 => "3d",
-				NodeType.DoubleX4 => "4d",
-				
-				NodeType.Bool => "bool",
-				NodeType.BoolX2 => "2b",
-				NodeType.BoolX3 => "3b",
-				NodeType.BoolX4 => "4b",
-				NodeType.VB => "vb",
-				
-				NodeType.IP4 => "ip4",
-				NodeType.Binary => "binary",
-				NodeType.String => "string",
-
-				_ => nodeType.ToString(),
-			};
+			return ToTypeNameMap.TryGetValue(nodeType, out var name) ? name : nodeType.ToString();
 		}
 
+		public static NodeType FromTypeName(string nodeType) {
+			return FromTypeNameMap[nodeType];
+		}
+		
 	}
 
 	public enum Endianness {

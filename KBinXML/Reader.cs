@@ -25,7 +25,9 @@ namespace KBinXML {
 			System.Text.Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 		}
 
-		public Reader(Stream stream) {
+		public Reader(byte[] data) : this(new MemoryStream(data), true) { }
+		
+		public Reader(Stream stream, bool closeStream = false) {
 			var signature = stream.ReadUInt8();
 			Assert(signature == Signature);
 
@@ -35,22 +37,22 @@ namespace KBinXML {
 			_encoding = (Encoding) encodingByte;
 			Assert(encodingByte == (byte) ~encodingCheck);
 
-			Console.WriteLine($"Compression: {_compression:G}, Encoding: {_encoding:G}.");
-
 			var nodeLength = stream.ReadUInt32(Endianness.BigEndian);
 
 			stream.Seek(nodeLength, SeekOrigin.Current);
 
 			var dataLength = stream.ReadUInt32(Endianness.BigEndian);
 
-			var nodeEnd = 8 + nodeLength;
-			var dataStart = nodeEnd + 4;
+			var nodeEnd = nodeLength;
+			var dataStart = nodeEnd + 12;
 
 			stream.Seek(8, SeekOrigin.Begin);
-			NodeStream = new MemoryStream(stream.Read((int) (nodeEnd - 8)));
+			NodeStream = new MemoryStream(stream.Read((int) nodeEnd));
 
 			stream.Seek(dataStart, SeekOrigin.Begin);
 			DataStream = new DataStream(stream.Read((int) (stream.Length - dataStart)));
+			
+			if(closeStream) stream.Dispose();
 		}
 
 		public void Dispose() {
@@ -97,11 +99,9 @@ namespace KBinXML {
 		public XDocument GetDocument() {
 			XElement? node = null;
 
-			var document = new XDocument(new XDeclaration("1.0", GetEncodingString(), "no"));
+			var document = new XDocument(new XDeclaration("1.0", GetEncodingString(_encoding), "no"));
 
 			foreach (var rawNode in this) {
-				Console.WriteLine($"Parsing {rawNode.ToString()}");
-
 				switch (rawNode.Type) {
 					case NodeType.FileEnd when node == null:
 						throw new NullReferenceException("Attempt to add a node that doesn't exist.");
@@ -191,12 +191,12 @@ namespace KBinXML {
 			return document;
 		}
 
-		private string GetEncodingString() {
-			return _encoding switch {
+		private static string GetEncodingString(Encoding encoding) {
+			return encoding switch {
 				Encoding.ASCII => "ASCII",
 				Encoding.EUCJP => "EUC-JP",
 				Encoding.ISO88591 => "ISO-8859-1",
-				Encoding.ShiftJIS => "Shift-JIS",
+				Encoding.ShiftJIS => "Shift_JIS",
 				Encoding.UTF8 => "UTF-8",
 				_ => throw new ArgumentOutOfRangeException()
 			};

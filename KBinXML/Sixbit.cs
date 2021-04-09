@@ -53,8 +53,16 @@ namespace KBinXML {
 			
 			return result;
 		}
+
+		public static void Pack(Stream stream, string input) {
+			var data = Pack(input);
+			stream.Write(data, 0, data.Length);
+		}
 		
 		public static byte[] Pack(string input) {
+			if (input.Length > byte.MaxValue) throw new Exception("String too long (shorter than 256)");
+			if (!ContainsInvalidCharacters(input)) throw new Exception("String contains invalid characters.");
+			
 			var length = (byte) input.Length;
 			var realLength = (int) Math.Ceiling(length * 6d / 8d);
 			var bytes = new byte[realLength + 1];
@@ -63,11 +71,16 @@ namespace KBinXML {
 			var i = 0;
 			foreach (var b in input.Select(c => UnpackMap[c])) {
 				for (var j = 0; j < 6; j++) {
-					bytes[1 + i / 8] = (byte) (bytes[1 + i / 8] | (b >> (5 - i % 6) & 1) << (7 - i % 8));
+					bytes[1 + i / 8] = (byte) (bytes[1 + i / 8] | (((b >> (5 - i % 6)) & 1) << (7 - i % 8)));
 					i += 1;
 				}
 			}
+			
 			return bytes;
+		}
+
+		private static bool ContainsInvalidCharacters(string input) {
+			return input.All(c => PackMap.Contains(c));
 		}
 
 	}
