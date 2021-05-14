@@ -119,7 +119,7 @@ namespace KBinXML {
 
 					case NodeType.FileEnd: {
 						document.Add(node);
-						break;
+						return document;
 					}
 
 					case NodeType.NodeEnd: {

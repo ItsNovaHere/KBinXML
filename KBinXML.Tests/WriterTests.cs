@@ -2,7 +2,6 @@
 using System.Text;
 using System.Xml.Linq;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace KBinXML.Tests {
 

@@ -41,6 +41,12 @@ namespace KBinXML {
 			}
 		}
 		
+		public static void RealignWrite(this Stream stream, int size = 4) {
+			while (stream.Position % size > 0) {
+				stream.WriteByte(0);
+			}
+		}
+		
 		public static byte[] Read(this Stream stream, int length) {
 			if (stream.CanRead) {
 				var buffer = new byte[length];
@@ -88,7 +94,7 @@ namespace KBinXML {
 				
 				stream.WriteUInt32((uint) data.Length, Endianness.BigEndian);
 				stream.Write(data, 0, data.Length);
-				stream.Realign();
+				stream.RealignWrite();
 			}
 		}
 

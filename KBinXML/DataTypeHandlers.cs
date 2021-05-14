@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -105,6 +107,9 @@ namespace KBinXML {
 		[DataTypeHandler(NodeType.IP4, 1, sizeof(byte) * 4)]
 		private static ToStringInternal ReadIP4 => (stream, count) => string.Join(" ", stream.ReadIP4(count));
 
+		[DataTypeHandler(NodeType.Time, 1, sizeof(byte) * 4)]
+		private static ToStringInternal ReadTime => (stream, count) => string.Join(" ", stream.ReadUInt32(count, Endianness.BigEndian));
+		
 		#endregion
 
 		#region FromString

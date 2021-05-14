@@ -40,7 +40,8 @@ namespace KBinXML {
 			WriteNode(_document.Root);
 			
 			_nodeStream.WriteByte(0xFF);
-			
+			_nodeStream.RealignWrite();
+
 			stream.WriteUInt32((uint) _nodeStream.Length, Endianness.BigEndian);
 			
 			_nodeStream.WriteTo(stream);
@@ -66,7 +67,7 @@ namespace KBinXML {
 					
 					_dataStream.WriteUInt32((uint) data.Length, Endianness.BigEndian);
 					_dataStream.Write(data, 0, data.Length);
-					_dataStream.Realign();
+					_dataStream.RealignWrite();
 					break;
 				
 				default:
